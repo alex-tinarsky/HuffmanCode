@@ -5,12 +5,11 @@ namespace HuffmanCode
 {
     class Program
     {
-        static List<Node> Input()
+        static List<Node> Input(string Str)
         {
-            var Str = "Алексей Докажите, что энтропия монетки принимает" +
-                " наибольшее значение для правильной монетки. Тинарский";
             var str = new string(Str.Where(c =>
             (!char.IsPunctuation(c) && !char.IsWhiteSpace(c) && !char.IsNumber(c))).ToArray()).ToLower();
+            Console.WriteLine(str);
             List<Node> list_of_nodes = new();
             HashSet<char> chars = new(str);
             foreach (char ch in chars)
@@ -36,19 +35,68 @@ namespace HuffmanCode
             return CreateTree(list_of_nodes);
         }
 
+        static void GetCodeToNode(Node node, string code, Dictionary<char, string> dict)
+        {
+            if (node.Character != null)
+            {
+                dict.Add((char)node.Character, code);
+                return;
+            }
+
+            GetCodeToNode(node.Left, code + "0", dict);
+            GetCodeToNode(node.Right, code + "1", dict);
+        }
+
+        static Dictionary<char, string> GetCharCodes(Node root)
+        {
+            Dictionary<char, string> dict = new();
+            GetCodeToNode(root, "", dict);
+            return dict;
+        }
+
+        static void PrintTree(Node node, int depth)
+        {
+            if (node.Left == null && node.Right == null)
+            {
+                Console.WriteLine($"{String.Concat(Enumerable.Repeat("   |", depth))}--" +
+                    $"{node.Character}({node.NumberOfChar})");
+                return;
+            }
+            Console.WriteLine($"{String.Concat(Enumerable.Repeat("   |", depth))}  " +
+                    $"({node.NumberOfChar})");
+
+            PrintTree(node.Left, depth + 1);
+            PrintTree(node.Right, depth + 1);
+        }
+
         static void Main(string[] args)
         {
-            var list_of_nodes = Input();
+            var Str = "Алексей Докажите, что энтропия монетки принимает" +
+                " наибольшее значение для правильной монетки. Тинарский";
+
+            var Str2 = "AHFBHCEHEHCEAHDCEEHHHCHHHDEGHGGEHCHH";
+
+            var list_of_nodes = Input(Str);
+
+            list_of_nodes.Sort();
             foreach (Node c in list_of_nodes)
             {
                 Console.WriteLine($"{c.Character}: {c.NumberOfChar}");
             }
+            Console.WriteLine("------");
 
-            var tree = CreateTree(Input());
-            foreach (Node c in tree)
+            var tree = CreateTree(list_of_nodes)[0];
+
+            var dict = GetCharCodes(tree);
+
+            var dict_keys = dict.Keys.OrderBy<char, int>(key => dict[key].Length);
+            foreach (char key in dict_keys)
             {
-                Console.WriteLine($"{c.Character}: {c.NumberOfChar}");
+                Console.WriteLine($"{key}: {dict[key]}");
             }
+            Console.WriteLine();
+
+            PrintTree(tree, 0);
         }
     }
 }
