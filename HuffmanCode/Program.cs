@@ -5,10 +5,10 @@ namespace HuffmanCode
 {
     class Program
     {
-        static List<Node> Input(string Str)
+        static List<Node> Preprocessing(string Str)
         {
             var str = new string(Str.Where(c =>
-            (!char.IsPunctuation(c) && !char.IsWhiteSpace(c) && !char.IsNumber(c))).ToArray()).ToLower();
+                (char.IsLetter(c))).ToArray()).ToLower();
             Console.WriteLine(str);
             List<Node> list_of_nodes = new();
             HashSet<char> chars = new(str);
@@ -71,12 +71,9 @@ namespace HuffmanCode
 
         static void Main(string[] args)
         {
-            var Str = "Алексей Докажите, что энтропия монетки принимает" +
-                " наибольшее значение для правильной монетки. Тинарский";
+            var Str = Console.ReadLine();
 
-            var Str2 = "AHFBHCEHEHCEAHDCEEHHHCHHHDEGHGGEHCHH";
-
-            var list_of_nodes = Input(Str);
+            var list_of_nodes = Preprocessing(Str);
 
             list_of_nodes.Sort();
             foreach (Node c in list_of_nodes)
